@@ -1,55 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:note_app_hive_db/cubits/add_note_cubit.dart';
 
-import 'custom_button.dart';
-import 'custom_text_field.dart';
+import 'add_note_form.dart';
 
 class AddNoteBottomSheet extends StatelessWidget {
   const AddNoteBottomSheet({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const SingleChildScrollView(child:  AddNoteForm());
-  }
-}
-
-class AddNoteForm extends StatefulWidget {
-  const AddNoteForm({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<AddNoteForm> createState() => _AddNoteFormState();
-}
-
-class _AddNoteFormState extends State<AddNoteForm> {
-  final GlobalKey<FormState> formKey = GlobalKey();
-  AutovalidateMode autoValidateMode =  AutovalidateMode.disabled;
-  String ? title , subTitle;
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: formKey,
-      autovalidateMode: autoValidateMode ,
-      child: Column(
-        children:  [
-          SizedBox(height: 30),
-          CustomTextField(hint: "Title" , onSaved: (value){title = value;}),
-          SizedBox(height: 10),
-          CustomTextField(hint: "Content", maxLine: 6 , onSaved: (value){subTitle = value;}),
-          CustomButton(
-            onTap: (){
-              if(formKey.currentState!.validate()){
-                formKey.currentState!.save();
-              }else{
-                autoValidateMode = AutovalidateMode.always;
-                setState(() {
-
-                });
-              }
-            },
-            title: 'Save',
-          ),
-        ],
+    return SingleChildScrollView(
+      child: BlocConsumer<AddNoteCubit, AddNoteState>(
+        listener: (context, state) {
+          if (state is AddNoteFailure) {
+            print(" failure ");
+          }
+          if (state is AddNoteSuccess) {
+            Navigator.of(context).pop();
+          }
+        },
+        builder: (context, state) {
+          if (state is AddNoteLoading) {
+            return const CircularProgressIndicator();
+          }
+          return Container();
+        },
       ),
     );
   }
