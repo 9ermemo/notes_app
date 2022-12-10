@@ -9,23 +9,18 @@ class AddNoteBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: BlocConsumer<AddNoteCubit, AddNoteState>(
-        listener: (context, state) {
-          if (state is AddNoteFailure) {
-            print(" failure ");
-          }
-          if (state is AddNoteSuccess) {
-            Navigator.of(context).pop();
-          }
-        },
-        builder: (context, state) {
-          if (state is AddNoteLoading) {
-            return const CircularProgressIndicator();
-          }
-          return Container();
-        },
-      ),
+    var bloc = BlocProvider.of<AddNoteCubit>(context);
+    return BlocBuilder<AddNoteCubit, AddNoteState>(
+      builder: (context, state) {
+        if (state is AddNoteLoading) {
+          return const CircularProgressIndicator();
+        } else if (state is AddNoteSuccess) {
+          return const SnackBar(content: Text('is done !'));
+        } else if (state is AddNoteFailure) {
+          return SnackBar(content: Center(child: Text(state.error)));
+        }
+        return const AddNoteForm();
+      },
     );
   }
 }
